@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: 3. Set up Python 3.11
         uses: actions/setup-python@v5
@@ -31,7 +30,7 @@ jobs:
           python-version: '3.11'
 
       - name: 4. Install Node dependencies
-        run: npm ci
+        run: npm install
 
       - name: 5. Install Python dependencies & PyInstaller
         run: |
