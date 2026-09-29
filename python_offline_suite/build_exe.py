@@ -9,7 +9,7 @@ import sys
 
 def build():
     print("==================================================")
-    print("📦 Building Standalone Tamil OCR Desktop Executable (.exe)")
+    print("[BUILD] Building Standalone Tamil OCR Desktop Executable (.exe)")
     print("==================================================")
 
     cmd = [
@@ -32,12 +32,12 @@ def build():
 
     if result.returncode == 0:
         print("\n==================================================")
-        print("✅ SUCCESS! Executable built successfully!")
+        print("[OK] SUCCESS! Executable built successfully!")
         print("Output file location: dist/Tamify_Desktop_Studio.exe")
         print("You can distribute this single .exe file to any Windows computer.")
         print("==================================================")
     else:
-        print("\n❌ Build failed. Please ensure PyInstaller is installed (`pip install pyinstaller`).")
+        print("\n[ERROR] Build failed. Please ensure PyInstaller is installed (`pip install pyinstaller`).")
 
 if __name__ == "__main__":
     build()
