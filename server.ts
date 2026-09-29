@@ -27,7 +27,41 @@ try {
 }
 
 const app = express();
-const PORT = 3000;
+
+// Configure dynamic port and host binding
+// In Electron desktop mode, Electron passes TAMIFY_PORT and the server binds strictly to 127.0.0.1
+// In development/cloud preview mode, it continues serving port 3000
+const PORT = Number(process.env.TAMIFY_PORT || process.env.PORT || 3000);
+const HOST = process.env.TAMIFY_HOST || (process.env.TAMIFY_PORT ? '127.0.0.1' : (process.env.NODE_ENV === 'production' && !process.env.PORT ? '127.0.0.1' : '0.0.0.0'));
+
+// Helper to locate Python standalone executable or scripts across dev and packaged Electron
+export function getPythonSuitePath(): { isExecutable: boolean; path: string; exists: boolean } {
+  // 1. Packaged Electron extraResource location
+  if (process.resourcesPath) {
+    const packagedExe = path.join(process.resourcesPath, 'python_offline_suite', 'dist', 'Tamify_Desktop_Studio.exe');
+    if (fs.existsSync(packagedExe)) {
+      return { isExecutable: true, path: packagedExe, exists: true };
+    }
+    const packagedAltExe = path.join(process.resourcesPath, 'Tamify_Desktop_Studio.exe');
+    if (fs.existsSync(packagedAltExe)) {
+      return { isExecutable: true, path: packagedAltExe, exists: true };
+    }
+  }
+
+  // 2. Local dist/build output from python build_exe.py
+  const localExe = path.join(process.cwd(), 'python_offline_suite', 'dist', 'Tamify_Desktop_Studio.exe');
+  if (fs.existsSync(localExe)) {
+    return { isExecutable: true, path: localExe, exists: true };
+  }
+
+  // 3. Script source path
+  const scriptPath = path.join(process.cwd(), 'python_offline_suite', 'desktop_app.py');
+  return {
+    isExecutable: false,
+    path: scriptPath,
+    exists: fs.existsSync(scriptPath)
+  };
+}
 
 // Body parsers with generous limits for high-res scans & multi-page documents
 app.use(express.json({ limit: '50mb' }));
@@ -51,10 +85,33 @@ function getGeminiClient() {
 }
 
 // ==========================================
-// 1. HEALTH CHECK
+// 1. HEALTH CHECK & DESKTOP STATUS
 // ==========================================
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'Tamil Legacy OCR & DOCX Engine' });
+  res.json({
+    status: 'ok',
+    service: 'Tamil Legacy OCR & DOCX Engine',
+    port: PORT,
+    host: HOST
+  });
+});
+
+app.get('/api/desktop/status', (_req, res) => {
+  res.json({
+    status: 'ok',
+    isElectron: process.env.TAMIFY_ELECTRON === 'true',
+    port: PORT,
+    host: HOST,
+    platform: process.platform,
+    pythonSuite: getPythonSuitePath()
+  });
+});
+
+app.get('/api/python-suite-info', (_req, res) => {
+  res.json({
+    success: true,
+    ...getPythonSuitePath()
+  });
 });
 
 // ==========================================
@@ -1146,22 +1203,49 @@ app.get([
 // VITE MIDDLEWARE / STATIC ASSETS SETUP
 // ==========================================
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && !process.env.ELECTRON_SERVE_DIST) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa'
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    // Determine the production distribution directory across local and packaged Electron runtimes
+    let distPath = path.join(process.cwd(), 'dist');
+    if (!fs.existsSync(path.join(distPath, 'index.html'))) {
+      if (fs.existsSync(path.join(__dirname, 'index.html'))) {
+        distPath = __dirname;
+      } else if (process.resourcesPath && fs.existsSync(path.join(process.resourcesPath, 'app', 'dist', 'index.html'))) {
+        distPath = path.join(process.resourcesPath, 'app', 'dist');
+      } else if (process.resourcesPath && fs.existsSync(path.join(process.resourcesPath, 'dist', 'index.html'))) {
+        distPath = path.join(process.resourcesPath, 'dist');
+      }
+    }
+
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Tamil DOCX Engine server running at http://localhost:${PORT}`);
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`Tamify server running at http://${HOST}:${PORT}`);
+  });
+
+  // Graceful shutdown handling when launched as child process by Electron
+  const shutdown = () => {
+    console.log('Tamify Express server stopping gracefully...');
+    server.close(() => {
+      console.log('Tamify Express server closed cleanly.');
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(0), 3000);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+  process.on('message', (msg) => {
+    if (msg === 'shutdown' || msg === 'exit') shutdown();
   });
 }
 

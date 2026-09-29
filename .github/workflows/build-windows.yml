@@ -1,0 +1,77 @@
+name: Build Tamify Windows Desktop Installer
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Package Windows Desktop App (.exe)
+    runs-on: windows-latest
+
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 2. Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 3. Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 4. Install Node dependencies
+        run: npm ci
+
+      - name: 5. Install Python dependencies & PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python_offline_suite/requirements.txt pyinstaller
+
+      - name: 6. Build Standalone Python Offline Suite (.exe)
+        working-directory: python_offline_suite
+        run: python build_exe.py
+
+      - name: 7. Stage Python executable into Electron resources
+        shell: bash
+        run: |
+          mkdir -p assets
+          if [ -f python_offline_suite/dist/Tamify_Desktop_Studio.exe ]; then
+            echo "Python EXE verified: python_offline_suite/dist/Tamify_Desktop_Studio.exe"
+          fi
+
+      - name: 8. Build Frontend, Backend & Electron bundles
+        run: npm run build
+
+      - name: 9. Build Windows Desktop Installer via Electron Forge
+        run: npm run make:windows
+        env:
+          NODE_ENV: production
+
+      - name: 10. List generated build artifacts
+        shell: bash
+        run: |
+          echo "=== Forge Output Directory ==="
+          ls -la out/make/ || true
+          ls -la out/make/squirrel.windows/x64/ || true
+
+      - name: 11. Upload Windows Installer Artifact (Tamify-Setup.exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tamify-Windows-Setup-x64
+          path: |
+            out/make/squirrel.windows/x64/Tamify-Setup.exe
+            out/make/squirrel.windows/x64/*.nupkg
+            out/make/squirrel.windows/x64/RELEASES
+            out/make/zip/win32/x64/*.zip
+          if-no-files-found: warn
