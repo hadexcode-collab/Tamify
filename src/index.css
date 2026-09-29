@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-tau-marutham {
+    font-family: 'Tau-marutham', 'TAU-Marutham', 'TAU_Marutham', 'Marutham', 'Nirmala UI', 'Latha', 'Noto Sans Tamil', sans-serif;
+  }
+}
+
+/* Authentic Official Letter Paper Styles */
+.official-letter-sheet {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  font-family: 'Tau-marutham', 'TAU-Marutham', 'TAU_Marutham', 'Marutham', 'Nirmala UI', 'Latha', 'Noto Sans Tamil', sans-serif;
+  line-height: 1.6;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .official-letter-sheet {
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

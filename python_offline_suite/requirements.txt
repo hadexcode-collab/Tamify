@@ -1,0 +1,9 @@
+# Python Offline Tamil OCR & DOCX Suite Dependencies
+# Install with: pip install -r requirements.txt
+
+pytesseract>=0.3.10
+pymupdf>=1.23.0
+python-docx>=1.1.0
+openpyxl>=3.1.0
+pillow>=10.0.0
+pyinstaller>=6.0.0

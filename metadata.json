@@ -1,0 +1,6 @@
+{
+  "name": "Tamify",
+  "description": "Tamify • Intelligent Tamil Legacy Document OCR, PDF to Excel (.xlsx) Converter, BAMINI/TSCII/TAB Converter, Keezhadi Typewriter & Unicode DOCX Studio.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

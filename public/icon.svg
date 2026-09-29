@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <filter id="icon-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+    <linearGradient id="icon-arrow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E53935" />
+      <stop offset="100%" stop-color="#C62828" />
+    </linearGradient>
+    <linearGradient id="icon-blue-box" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E6CB6" />
+      <stop offset="100%" stop-color="#0F3B70" />
+    </linearGradient>
+  </defs>
+
+  <!-- Clean Canvas Background -->
+  <rect width="512" height="512" rx="110" fill="#FFFFFF" />
+  <rect width="512" height="512" rx="110" fill="none" stroke="#E2E8F0" stroke-width="4" />
+
+  <!-- Logo Graphics Group -->
+  <g transform="translate(48, 56) scale(0.88)" filter="url(#icon-shadow)">
+    <!-- 1. PDF Document (Left) -->
+    <g transform="translate(0, 0)">
+      <path d="M 25,10 L 110,10 C 118,10 124,15 128,22 L 150,48 C 154,53 158,60 158,68 L 158,210 C 158,222 148,232 136,232 L 25,232 C 12,232 0,222 0,210 L 0,35 C 0,22 12,10 25,10 Z" 
+            fill="#FFFFFF" stroke="#E5252A" stroke-width="14" stroke-linejoin="round" />
+      <path d="M 115,12 L 115,55 C 115,62 120,68 128,68 L 155,68 Z" fill="#E5252A" />
+
+      <!-- PDF Stylized Knot -->
+      <g transform="translate(78, 140) scale(1.0)">
+        <path d="M -15,-55 C -2, -42 12, -12 2, 20 C -8, 42 -30, 46 -38, 26 C -44, 10 -36, -8 -20, -15 C 12, -26 38, 12 48, 32 C 50, 38 56, 38 58, 32 C 62, 24 54, 8 32, -2 C 6, -15 -8, -42 -15,-55 Z" 
+              fill="none" stroke="#E5252A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
+    </g>
+
+    <!-- 2. Dynamic Red Arrow -->
+    <g transform="translate(125, 95)">
+      <path d="M 0,75 Q 55,25 120,38 L 120,12 L 180,62 L 120,112 L 120,85 Q 68,78 15,105 Z" 
+            fill="url(#icon-arrow)" stroke="#FFFFFF" stroke-width="3" />
+    </g>
+
+    <!-- 3. Word DOCX Container (Right) -->
+    <g transform="translate(210, 0)">
+      <path d="M 0,10 L 185,10 C 198,10 210,22 210,35 L 210,210 C 210,222 198,232 185,232 L 0,232 Z" 
+            fill="url(#icon-blue-box)" />
+      
+      <!-- White Sheet -->
+      <path d="M 40,30 L 140,30 L 170,60 L 170,210 L 40,210 Z" fill="#FFFFFF" />
+      <path d="M 140,30 L 140,60 L 170,60 Z" fill="#CBD5E1" />
+
+      <!-- Word 'W' Blue Front Tile -->
+      <g transform="translate(26, 42)">
+        <polygon points="10,0 72,12 72,150 10,138" fill="#185ABD" />
+        <text x="41" y="98" font-family="'Segoe UI', Arial, sans-serif" font-size="60" font-weight="900" fill="#FFFFFF" text-anchor="middle">W</text>
+      </g>
+
+      <!-- Text Lines on Sheet -->
+      <g transform="translate(108, 85)" fill="#185ABD">
+        <rect x="0" y="0" width="48" height="7" rx="3" />
+        <rect x="0" y="16" width="48" height="7" rx="3" />
+        <rect x="0" y="32" width="48" height="7" rx="3" />
+        <rect x="0" y="48" width="48" height="7" rx="3" />
+        <rect x="0" y="64" width="32" height="7" rx="3" />
+      </g>
+
+      <!-- Orange Tamil 'அ' Character -->
+      <g transform="translate(170, 205)">
+        <text x="12" y="30" font-family="'Noto Sans Tamil', sans-serif" font-size="58" font-weight="900" fill="#E65100" stroke="#FFFFFF" stroke-width="3" text-anchor="middle">அ</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Tamify Brand Text -->
+  <text x="256" y="420" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="78" font-weight="900" fill="#0B2046" text-anchor="middle" letter-spacing="-1px">Tamify</text>
+</svg>
